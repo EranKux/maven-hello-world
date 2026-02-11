@@ -1,7 +1,6 @@
 # --- Multistage Docker Build ---
 # The Maven stage builds the JAR from source.
 # The runtime stage copies the JAR to a minimal OpenJDK image, running as a non-root user.
-# This enables building, packaging, and running your app with a single Docker build command, covering most of the requested pipeline steps.
 
 # --- Build Stage ---
 FROM maven:3.9.6-eclipse-temurin-17 AS build

@@ -28,6 +28,16 @@ jobs:
           echo "New version: $NEW_VERSION"
           echo "JAR_VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
+      - name: Commit and push version bump
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git add myapp/pom.xml
+          git commit -m "Bump patch version to ${{ env.JAR_VERSION }}" || echo "No changes to commit"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Build with Maven
         run: mvn -f myapp/pom.xml clean package
 
@@ -52,6 +62,13 @@ jobs:
         run: |
           curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
+      - name: Set up kubeconfig
+        run: |
+          echo "${KUBECONFIG}" > kubeconfig.yaml
+          echo "KUBECONFIG=$PWD/kubeconfig.yaml" >> $GITHUB_ENV
+        env:
+          KUBECONFIG: ${{ secrets.KUBECONFIG }}
+
       - name: Deploy with Helm
         run: |
           helm upgrade --install myapp ./helm \
@@ -61,4 +78,4 @@ jobs:
             --namespace default \
             --create-namespace
         env:
-          KUBECONFIG: ${{ secrets.KUBECONFIG }}
+          KUBECONFIG: ${{ env.KUBECONFIG }}
