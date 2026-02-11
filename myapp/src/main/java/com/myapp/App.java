@@ -1,7 +1,7 @@
 package com.myapp;
 
 /**
- * Hello world!
+ * Hello world :-)!
  *
  */
 public class App 
@@ -11,3 +11,4 @@ public class App
         System.out.println( "Hello World from Eran Kux!" );
     }
 }
+
