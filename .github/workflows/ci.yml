@@ -1,0 +1,55 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Bump patch version
+        run: |
+          VERSION=$(grep '<version>' myapp/pom.xml | head -1 | sed 's/.*<version>\(.*\)<\/version>.*/\1/')
+          PATCH=$(echo $VERSION | awk -F. '{print $3}')
+          PATCH=$((PATCH+1))
+          NEW_VERSION=$(echo $VERSION | awk -F. '{print $1"."$2"."}'"$PATCH")
+          sed -i "s/<version>$VERSION<\/version>/<version>$NEW_VERSION<\/version>/" myapp/pom.xml
+          echo "New version: $NEW_VERSION"
+          echo "JAR_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+
+      - name: Build with Maven
+        run: mvn -f myapp/pom.xml clean package
+
+      - name: Run tests
+        run: mvn -f myapp/pom.xml test
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: myapp-${{ env.JAR_VERSION }}
+          path: myapp/target/myapp-${{ env.JAR_VERSION }}.jar
+
+      - name: Build Docker image
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/myapp:${{ env.JAR_VERSION }} -f Dockerfile .
+
+      - name: Push Docker image
+        run: |
+          echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+          docker push ${{ secrets.DOCKER_USERNAME }}/myapp:${{ env.JAR_VERSION }}
+
+      - name: Smoke test Docker image
+        run: |
+          docker pull ${{ secrets.DOCKER_USERNAME }}/myapp:${{ env.JAR_VERSION }}
+          docker run --rm ${{ secrets.DOCKER_USERNAME }}/myapp:${{ env.JAR_VERSION }}
