@@ -4,7 +4,7 @@
 # This enables building, packaging, and running your app with a single Docker build command, covering most of the requested pipeline steps.
 
 # --- Build Stage ---
-FROM maven:3.8.7-openjdk-17-slim AS build
+FROM maven:3.9.6-eclipse-temurin-17 AS build
 WORKDIR /build
 COPY myapp/pom.xml myapp/pom.xml
 COPY myapp/src myapp/src

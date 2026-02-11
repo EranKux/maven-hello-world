@@ -34,12 +34,6 @@ jobs:
       - name: Run tests
         run: mvn -f myapp/pom.xml test
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: myapp-${{ env.JAR_VERSION }}
-          path: myapp/target/myapp-${{ env.JAR_VERSION }}.jar
-
       - name: Build Docker image
         run: |
           docker build -t ${{ secrets.DOCKER_USERNAME }}/myapp:${{ env.JAR_VERSION }} -f Dockerfile .
