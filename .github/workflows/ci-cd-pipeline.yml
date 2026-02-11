@@ -1,9 +1,9 @@
-name: CI Pipeline
+name: CI/CD Pipeline
 
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   build:
@@ -53,3 +53,18 @@ jobs:
         run: |
           docker pull ${{ secrets.DOCKER_USERNAME }}/myapp:${{ env.JAR_VERSION }}
           docker run --rm ${{ secrets.DOCKER_USERNAME }}/myapp:${{ env.JAR_VERSION }}
+
+      - name: Set up Helm
+        run: |
+          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+      - name: Deploy with Helm
+        run: |
+          helm upgrade --install myapp ./helm \
+            --set image.repository=${{ secrets.DOCKER_USERNAME }}/myapp \
+            --set image.tag=${{ env.JAR_VERSION }} \
+            --set image.pullPolicy=Always \
+            --namespace default \
+            --create-namespace
+        env:
+          KUBECONFIG: ${{ secrets.KUBECONFIG }}
