@@ -24,7 +24,7 @@ jobs:
           PATCH=$(echo $VERSION | awk -F. '{print $3}')
           PATCH=$((PATCH+1))
           NEW_VERSION=$(echo $VERSION | awk -F. '{print $1"."$2"."}'"$PATCH")
-          sed -i "s/<version>$VERSION<\/version>/<version>$NEW_VERSION<\/version>/" myapp/pom.xml
+          sed -i "s|<version>$VERSION</version>|<version>$NEW_VERSION</version>|" myapp/pom.xml
           echo "New version: $NEW_VERSION"
           echo "JAR_VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
