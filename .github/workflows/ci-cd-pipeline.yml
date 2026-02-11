@@ -23,7 +23,7 @@ jobs:
           VERSION=$(grep '<version>' myapp/pom.xml | head -1 | sed 's/.*<version>\(.*\)<\/version>.*/\1/')
           PATCH=$(echo $VERSION | awk -F. '{print $3}')
           PATCH=$((PATCH+1))
-          NEW_VERSION=$(echo $VERSION | awk -F. '{print $1"."$2"."}'"$PATCH")
+          NEW_VERSION=$(echo $VERSION | awk -F. -v patch="$PATCH" '{print $1"."$2"."patch}')
           sed -i "s|<version>${VERSION//\//\/}</version>|<version>${NEW_VERSION//\//\/}</version>|" myapp/pom.xml
           echo "New version: $NEW_VERSION"
           echo "JAR_VERSION=$NEW_VERSION" >> $GITHUB_ENV
