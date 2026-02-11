@@ -11,7 +11,7 @@ COPY myapp/src myapp/src
 RUN mvn -f myapp/pom.xml clean package
 
 # --- Runtime Stage ---
-FROM openjdk:17-jdk-slim
+FROM eclipse-temurin:17-jdk-jammy
 RUN useradd -m appuser
 USER appuser
 WORKDIR /home/appuser
