@@ -8,7 +8,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: github.event.head_commit.message != 'Bump patch version to ${{ env.JAR_VERSION }}'
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
