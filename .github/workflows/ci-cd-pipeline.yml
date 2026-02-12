@@ -64,10 +64,10 @@ jobs:
 
       - name: Set up kubeconfig
         run: |
-          echo "${KUBECONFIG}" > kubeconfig.yaml
+          echo "${KUBECONFIG_CONTENT}" > kubeconfig.yaml
           echo "KUBECONFIG=$PWD/kubeconfig.yaml" >> $GITHUB_ENV
         env:
-          KUBECONFIG: ${{ secrets.KUBECONFIG }}
+          KUBECONFIG_CONTENT: ${{ secrets.KUBECONFIG_CONTENT }}
 
       - name: Deploy with Helm
         run: |
