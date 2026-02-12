@@ -18,6 +18,12 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Build with Maven
+        run: mvn -f myapp/pom.xml clean package
+
+      - name: Run tests
+        run: mvn -f myapp/pom.xml test
+
       - name: Bump patch version
         run: |
           VERSION=$(grep '<version>' myapp/pom.xml | head -1 | sed 's/.*<version>\(.*\)<\/version>.*/\1/')
@@ -37,12 +43,6 @@ jobs:
           git push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build with Maven
-        run: mvn -f myapp/pom.xml clean package
-
-      - name: Run tests
-        run: mvn -f myapp/pom.xml test
 
       - name: Build Docker image
         run: |
